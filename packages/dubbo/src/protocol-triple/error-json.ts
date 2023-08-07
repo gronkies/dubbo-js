@@ -20,7 +20,8 @@ import type {
 } from "@bufbuild/protobuf";
 import { Code } from "../code.js";
 import { DubboError } from "../dubbo-error.js";
-import { codeFromString, codeToString } from "./code-string.js";
+import { codeFromString } from "./code-string.js";
+import { codeToErrorMessage } from "./error-message.js"
 
 /**
  * Parse a Connect error from a JSON value.
@@ -110,7 +111,7 @@ export function errorFromJsonBytes(
  * google.protobuf.Any. If serialization of the "debug" value fails, it
  * is silently disregarded.
  *
- * See https://connect.build/docs/protocol#error-end-stream
+ * See https://cn.dubbo.apache.org/zh-cn/overview/reference/protocols/triple-spec/
  *
  * @private Internal code, does not follow semantic versioning.
  */
@@ -120,10 +121,8 @@ export function errorToJson(
 ): JsonObject {
   const o: JsonObject = {
     status: error.code,
+    message: codeToErrorMessage(error.code)
   };
-  if (error.rawMessage.length > 0) {
-    o.message = error.rawMessage;
-  }
   if (error.details.length > 0) {
     type IncomingDetail = {
       type: string;
