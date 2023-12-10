@@ -15,65 +15,65 @@
  * limitations under the License.
  */
 
-export type TDubboInterface = string
-export type TDubboUrl = string
+export type TDubboInterface = string;
+export type TDubboUrl = string;
 
 export interface ITimeoutProps {
-  maxTimeout?: number
-  onTimeout: () => void
+  maxTimeout?: number;
+  onTimeout: () => void;
 }
 
 export interface INaocsClientProps {
-  namespace?: string
-  connect: string
-  logger?: Console
+  namespace?: string;
+  connect: string;
+  logger?: Console;
 }
 export interface IRegistrySubscriber {
-  onData: (map: Map<TDubboInterface, Array<TDubboUrl>>) => void
-  onError: (err: Error) => void
+  onData: (map: Map<TDubboInterface, Array<TDubboUrl>>) => void;
+  onError: (err: Error) => void;
 }
 
 export interface IZkClientConfig {
-  connect: string
-  timeout?: number
-  debug_level?: number
-  host_order_deterministic?: boolean
-  zkRootPath?: string
+  connect: string;
+  timeout?: number;
+  debug_level?: number;
+  host_order_deterministic?: boolean;
+  zkRootPath?: string;
 }
 
 export interface INodeProps {
-  path: string
-  data?: Buffer | string
-  isPersistent?: boolean
+  path: string;
+  data?: Buffer | string;
+  isPersistent?: boolean;
 }
 
 export interface DubboService {
-  dubboInterface: string
-  path?: string
-  version?: string
-  timeout?: number
-  group?: string
+  dubboInterface: string;
+  path?: string;
+  version?: string;
+  timeout?: number;
+  group?: string;
 }
 
 export interface RegisterConsumerService {
-  application: { name: string }
-  services: Array<DubboService>
+  application: { name: string };
+  services: Array<DubboService>;
 }
 
 export interface IDubboService {
-  dubboInterface: string
-  group?: string
-  version?: string
-  methods: { [key in string]: Function }
+  dubboInterface: string;
+  group?: string;
+  version?: string;
+  methods: { [key in string]: Function };
 }
 
 export interface IZkClientParams {
-  interface: string,
-  methods: string,
-  side: string,
-  pid: number,
-  protocol: string,
-  anyhost: boolean,
-  timestamp: number,
-  [key: string]: string | number | boolean | readonly string[] | readonly number[] | readonly boolean[] | null
+  interface: string;
+  methods: string;
+  side: string;
+  pid: number;
+  protocol: string;
+  anyhost: boolean;
+  timestamp: number;
+  [key: string]: string | number | boolean | readonly string[] | readonly number[] | readonly boolean[] | null;
 }

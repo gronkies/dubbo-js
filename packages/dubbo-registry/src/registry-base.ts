@@ -15,41 +15,41 @@
  * limitations under the License.
  */
 
-import debug from 'debug'
-import type { IRegistrySubscriber, TDubboInterface, TDubboUrl } from './types'
+import debug from 'debug';
+import type { IRegistrySubscriber, TDubboInterface, TDubboUrl } from './types';
 
-const log = debug('registry:base~')
+const log = debug('registry:base~');
 
 /**
  * Extract the base class of the registry
  */
 export default class BaseRegistry {
-  protected readonly subscribers: Set<IRegistrySubscriber>
-  protected readonly dubboServiceUrlMap: Map<TDubboInterface, Array<TDubboUrl>>
+  protected readonly subscribers: Set<IRegistrySubscriber>;
+  protected readonly dubboServiceUrlMap: Map<TDubboInterface, Array<TDubboUrl>>;
 
   constructor() {
     // Save the mapping relationship between the dubbo interface and the service URL
-    this.dubboServiceUrlMap = new Map()
-    this.subscribers = new Set()
+    this.dubboServiceUrlMap = new Map();
+    this.subscribers = new Set();
   }
 
   subscribe(subscriber: IRegistrySubscriber) {
-    this.subscribers.add(subscriber)
-    return this
+    this.subscribers.add(subscriber);
+    return this;
   }
 
   unsubscribe(subscriber: IRegistrySubscriber) {
-    this.subscribers.delete(subscriber)
-    return this
+    this.subscribers.delete(subscriber);
+    return this;
   }
 
   emitData(map: Map<TDubboInterface, Array<TDubboUrl>>) {
-    log('emit data => %O', map)
-    this.subscribers.forEach((s) => s.onData(map))
+    log('emit data => %O', map);
+    this.subscribers.forEach((s) => s.onData(map));
   }
 
   emitErr(err: Error) {
-    log('emit error %s', err)
-    this.subscribers.forEach((s) => s.onError(err))
+    log('emit error %s', err);
+    this.subscribers.forEach((s) => s.onError(err));
   }
 }

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-import type { ITimeoutProps } from './types'
+import type { ITimeoutProps } from './types';
 
 export default class Timeout {
-  private readonly maxTimeout: number
-  private readonly timer: NodeJS.Timeout
+  private readonly maxTimeout: number;
+  private readonly timer: NodeJS.Timeout;
 
   constructor(props: ITimeoutProps) {
-    this.maxTimeout = props.maxTimeout || 10 * 1000
+    this.maxTimeout = props.maxTimeout || 10 * 1000;
     this.timer = setTimeout(() => {
-      this.clearTimeout()
-      props.onTimeout()
-    }, this.maxTimeout)
+      this.clearTimeout();
+      props.onTimeout();
+    }, this.maxTimeout);
   }
 
   clearTimeout() {
-    clearTimeout(this.timer)
+    clearTimeout(this.timer);
   }
 }
