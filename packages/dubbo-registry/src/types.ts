@@ -55,6 +55,13 @@ export interface DubboService {
   group?: string;
 }
 
+export interface RegisterServicesMeta {
+  application: { name: string };
+  port: number;
+  dubbo?: string;
+  services: Array<IDubboService>;
+}
+
 export interface RegisterConsumerService {
   application: { name: string };
   services: Array<DubboService>;

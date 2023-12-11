@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { RegisterConsumerService, IRegistrySubscriber, IDubboService } from './types';
+import type { RegisterConsumerService, IRegistrySubscriber, RegisterServicesMeta, TDubboUrl, TDubboInterface } from './types';
 
 export interface IRegistry<T> {
   /**
@@ -33,24 +33,13 @@ export interface IRegistry<T> {
    * register dubbo service
    * @param meta
    */
-  registerServices(meta: {
-    application: { name: string };
-    port: number;
-    dubbo?: string;
-    services: Array<IDubboService>;
-  }): Promise<void>;
+  registerServices(meta: RegisterServicesMeta): Promise<void>;
 
   /**
    * register dubbo consumer
    * @param consumers
    */
   registerConsumers(consumers: RegisterConsumerService): Promise<void>;
-
-  /**
-   * subscribe registry service status change
-   * @param cb
-   */
-  subscribe(cb: IRegistrySubscriber): this;
 
   /**
    * close
@@ -61,4 +50,28 @@ export interface IRegistry<T> {
    * get registry client such as zookeeper, nacos
    */
   getClient(): T | null;
+
+  /**
+   * Subscribe a callback function to handle service status changes.
+   * @param cb - The callback function to subscribe.
+   */
+  subscribe(cb: IRegistrySubscriber): this;
+
+  /**
+   * Unsubscribe a previously subscribed callback function.
+   * @param cb - The callback function to unsubscribe.
+   */
+  unsubscribe(cb: IRegistrySubscriber): this;
+
+  /**
+   * Emit service status change data to all subscribed callback functions.
+   * @param map - A Map object representing the Dubbo interface and its corresponding URL list.
+   */
+  emitData(map: Map<TDubboInterface, Array<TDubboUrl>>): void;
+
+  /**
+   * Emit an error to all subscribed callback functions.
+   * @param err - The error object to emit.
+   */
+  emitErr(err: Error): void;
 }
