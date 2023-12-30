@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-export type TDubboInterface = string;
-export type TDubboUrl = string;
+export type TypeName = string;
+export type DubboUrl = string;
 
 export interface ITimeoutProps {
   maxTimeout?: number;
@@ -28,8 +28,8 @@ export interface INaocsClientProps {
   connect: string;
   logger?: Console;
 }
-export interface IRegistrySubscriber {
-  onData: (map: Map<TDubboInterface, Array<TDubboUrl>>) => void;
+export interface RegistrySubscriber {
+  onChange: (map: Map<TypeName, Array<DubboUrl>>) => void;
   onError: (err: Error) => void;
 }
 
@@ -82,5 +82,12 @@ export interface IZkClientParams {
   protocol: string;
   anyhost: boolean;
   timestamp: number;
-  [key: string]: string | number | boolean | readonly string[] | readonly number[] | readonly boolean[] | null;
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | readonly string[]
+    | readonly number[]
+    | readonly boolean[]
+    | null;
 }

@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-import ip from 'ip';
-import debug from 'debug';
-import qs from 'querystring';
-import Zookeeper from 'zookeeper';
-import type { IRegistry } from './registry';
-import BaseRegistry from './registry-base';
-import Timeout from './timeout';
-import type { IDubboService, INodeProps, IZkClientConfig, RegisterConsumerService, IZkClientParams } from './types';
+import ip from "ip";
+import debug from "debug";
+import qs from "querystring";
+import Zookeeper from "zookeeper";
+import type { DubboRegistry } from "./registry";
+import BaseRegistry from "./registry-base";
+import Timeout from "./timeout";
+import type {
+  IDubboService,
+  INodeProps,
+  IZkClientConfig,
+  RegisterConsumerService,
+  IZkClientParams
+} from "./types";
 
-const dlog = debug('dubbo:zookeeper~');
+const dlog = debug("dubbo:zookeeper~");
 const ipAddr = ip.address();
-const DUBBO_ZK_ROOT_PATH: string = '/dubbo';
+const DUBBO_ZK_ROOT_PATH: string = "/dubbo";
 
-export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeeper> {
+export class ZookeeperRegistry extends BaseRegistry implements DubboRegistry<Zookeeper> {
   private readonly props: IZkClientConfig;
   private client!: Zookeeper | null;
   private timeout: Timeout;
@@ -42,7 +48,6 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
     dlog(`init zookeeper with %O`, props);
     ZookeeperRegistry.checkProps(props);
     this.props = props;
-
     this.props.zkRootPath = this.props.zkRootPath || DUBBO_ZK_ROOT_PATH;
 
     // init ready promise
@@ -77,12 +82,12 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
     this.props.timeout = this.props.timeout || 40 * 1000;
     this.props.debug_level = this.props.debug_level || Zookeeper.constants.ZOO_LOG_LEVEL_WARN;
     this.props.host_order_deterministic = this.props.host_order_deterministic || false;
-    dlog('connecting zookeeper with %O', this.props);
+    dlog("connecting zookeeper with %O", this.props);
 
     this.client = new Zookeeper(this.props);
 
-    this.client.on('connect', async () => {
-      dlog('connected with zookeeper with %s', this.props.connect);
+    this.client.on("connect", async () => {
+      dlog("connected with zookeeper with %s", this.props.connect);
       this.timeout.clearTimeout();
 
       try {
@@ -97,14 +102,14 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
       }
     });
 
-    this.client.on('close', () => {
+    this.client.on("close", () => {
       dlog(`zookeeper closed`);
       this.emitErr(new Error(`Zookeeper was closed`));
       this.close();
       this.init();
     });
 
-    this.client.on('error', (err) => {
+    this.client.on("error", (err) => {
       dlog(`zookeeper error %s`, err);
       this.reject && this.reject(err);
       this.emitErr(err);
@@ -117,7 +122,7 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
 
   private async createNode(cfg: INodeProps) {
     dlog(`create zookeeper node %j`, cfg);
-    const { path, data = '', isPersistent = false } = cfg;
+    const { path, data = "", isPersistent = false } = cfg;
     try {
       await this.client?.exists(path, false);
       dlog(`${path} node was existed ~`);
@@ -137,7 +142,7 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
           dlog(`mkdir %s error %s`, path, err);
           reject(err);
         } else {
-          dlog('mkdir %s ok', path);
+          dlog("mkdir %s ok", path);
           resolve();
         }
       });
@@ -147,7 +152,7 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
   private wrapWatch(dubboInterface: string) {
     const servicePath = `${this.props.zkRootPath}/${dubboInterface}/providers`;
     return async (type: number, state: number) => {
-      dlog('wrapWatch %s %d %d', servicePath, type, state);
+      dlog("wrapWatch %s %d %d", servicePath, type, state);
       await this.findDubboServiceUrl(dubboInterface);
       this.emitData(this.dubboServiceUrlMap);
     };
@@ -173,25 +178,25 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
     const params: IZkClientParams = {
       interface: dubboInterface,
       methods: methodName,
-      side: 'provider',
+      side: "provider",
       pid: process.pid,
-      protocol: 'dubbo',
+      protocol: "dubbo",
       anyhost: true,
       timestamp: Date.now()
     };
 
     // dynamic params
     if (meta.application) {
-      params['application'] = meta.application.name || 'node-dubbo-service';
+      params["application"] = meta.application.name || "node-dubbo-service";
     }
     if (meta.dubbo) {
-      params['dubbo'] = meta.dubbo;
+      params["dubbo"] = meta.dubbo;
     }
-    if (group && group !== '') {
-      params['group'] = group;
+    if (group && group !== "") {
+      params["group"] = group;
     }
-    if (version && version !== '0.0.0') {
-      params['version'] = version;
+    if (version && version !== "0.0.0") {
+      params["version"] = version;
     }
 
     return (
@@ -213,8 +218,10 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
   }
 
   async findDubboServiceUrls(dubboInterfaces: Array<string>) {
-    dlog('find dubbo service urls => %O', dubboInterfaces);
-    await Promise.all(dubboInterfaces.map((dubboInterface) => this.findDubboServiceUrl(dubboInterface)));
+    dlog("find dubbo service urls => %O", dubboInterfaces);
+    await Promise.all(
+      dubboInterfaces.map((dubboInterface) => this.findDubboServiceUrl(dubboInterface))
+    );
     this.emitData(this.dubboServiceUrlMap);
   }
 
@@ -222,14 +229,16 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
     const servicePath = `${this.props.zkRootPath}/${dubboInterface}/providers`;
     const urls = (
       this.client
-        ? await this.client.w_get_children(servicePath, this.wrapWatch(dubboInterface)).catch((err) => {
-            dlog(`get beehive service urls err %s %s %s`, servicePath, dubboInterface, err);
-            return [];
-          })
+        ? await this.client
+            .w_get_children(servicePath, this.wrapWatch(dubboInterface))
+            .catch((err) => {
+              dlog(`get beehive service urls err %s %s %s`, servicePath, dubboInterface, err);
+              return [];
+            })
         : []
     )
       .map((v: string) => decodeURIComponent(v))
-      .filter((v: string) => v.startsWith('dubbo://'));
+      .filter((v: string) => v.startsWith("dubbo://"));
     this.dubboServiceUrlMap.set(dubboInterface, urls);
   }
 
@@ -261,7 +270,7 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
   }
 
   async registerConsumers(consumer: RegisterConsumerService) {
-    dlog('registry consumers => %O', consumer);
+    dlog("registry consumers => %O", consumer);
 
     // waiting ready
     await this.ready();
@@ -277,13 +286,13 @@ export class ZookeeperRegistry extends BaseRegistry implements IRegistry<Zookeep
       const dubboConsumerUrl = `consumer://${ipAddr}/${dubboInterface}?${qs.stringify({
         application: application.name,
         interface: dubboInterface,
-        category: 'consumers',
-        method: '',
+        category: "consumers",
+        method: "",
         revision: version,
         version: version,
         group: group,
         timeout: timeout,
-        side: 'consumer',
+        side: "consumer",
         check: false,
         pid: process.pid
       })}`;

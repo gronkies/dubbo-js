@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-import type { RegisterConsumerService, IRegistrySubscriber, RegisterServicesMeta, TDubboUrl, TDubboInterface } from './types';
+import type {
+  RegisterConsumerService,
+  RegistrySubscriber,
+  RegisterServicesMeta,
+  DubboUrl,
+  TypeName
+} from "./types";
 
-export interface IRegistry<T> {
+export interface DubboRegistry<T> {
   /**
    * waiting registry status ready
    */
@@ -55,19 +61,19 @@ export interface IRegistry<T> {
    * Subscribe a callback function to handle service status changes.
    * @param cb - The callback function to subscribe.
    */
-  subscribe(cb: IRegistrySubscriber): this;
+  subscribe(cb: RegistrySubscriber): this;
 
   /**
    * Unsubscribe a previously subscribed callback function.
    * @param cb - The callback function to unsubscribe.
    */
-  unsubscribe(cb: IRegistrySubscriber): this;
+  unsubscribe(cb: RegistrySubscriber): this;
 
   /**
    * Emit service status change data to all subscribed callback functions.
    * @param map - A Map object representing the Dubbo interface and its corresponding URL list.
    */
-  emitData(map: Map<TDubboInterface, Array<TDubboUrl>>): void;
+  emitData(map: Map<TypeName, Array<DubboUrl>>): void;
 
   /**
    * Emit an error to all subscribed callback functions.

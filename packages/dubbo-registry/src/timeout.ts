@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { ITimeoutProps } from './types';
+import type { ITimeoutProps } from "./types";
 
 export default class Timeout {
   private readonly maxTimeout: number;
