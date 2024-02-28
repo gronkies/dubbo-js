@@ -226,7 +226,7 @@ export class ZookeeperRegistry extends BaseRegistry implements DubboRegistry<Zoo
   }
 
   async findDubboServiceUrl(dubboInterface: string) {
-    const servicePath = `${this.props.zkRootPath}/${dubboInterface}/providers`;
+    const servicePath = `${this.props.zkRootPath}/${application}`;
     const urls = (
       this.client
         ? await this.client

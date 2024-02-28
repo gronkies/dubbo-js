@@ -15,21 +15,18 @@
 import type { MethodInfo, ServiceType } from "@bufbuild/protobuf";
 import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
-import {
-  createMethodImplSpec,
-  createServiceImplSpec,
-} from "./implementation.js";
+import { createMethodImplSpec, createServiceImplSpec } from "./implementation.js";
 import type { MethodImpl, ServiceImpl } from "./implementation.js";
 import { createHandlerFactory as handlerFactoryGrpcWeb } from "./protocol-grpc-web/handler-factory.js";
 import { createHandlerFactory as handlerFactoryGrpc } from "./protocol-grpc/handler-factory.js";
 import { createHandlerFactory as handlerFactoryTriple } from "./protocol-triple/handler-factory.js";
-import type { ExpandHandlerOptions, ExpandHandler } from './protocol-triple/expand-handler.js';
+import type { ExpandHandlerOptions, ExpandHandler } from "./protocol-triple/expand-handler.js";
 import {
   type UniversalHandler,
   type UniversalHandlerOptions,
   createUniversalMethodHandler,
   createUniversalServiceHandlers,
-  validateUniversalHandlerOptions,
+  validateUniversalHandlerOptions
 } from "./protocol/universal-handler.js";
 import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory.js";
 
@@ -39,7 +36,7 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
  * Create a file `connect.ts` with a default export such as this:
  *
  * ```ts
- * import {DubboRouter} from "@apachedubbo/dubbo";
+ * import { DubboRouter } from "@apachedubbo/dubbo";
  *
  * export default (router: DubboRouter) => {
  *   router.service(ElizaService, {});
@@ -52,15 +49,17 @@ import type { ProtocolHandlerFactory } from "./protocol/protocol-handler-factory
 export interface DubboRouter {
   readonly handlers: Array<UniversalHandler & ExpandHandler>;
   service<T extends ServiceType>(
-    service: T,
-    implementation: Partial<ServiceImpl<T>>,
-    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
+    options: {
+      service: T;
+      implement: Partial<ServiceImpl<T>>;
+    } & Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
   rpc<M extends MethodInfo>(
-    service: ServiceType,
-    method: M,
-    impl: MethodImpl<M>,
-    options?: Partial<UniversalHandlerOptions & ExpandHandlerOptions>
+    options: {
+      service: ServiceType;
+      method: M;
+      impl: MethodImpl<M>;
+    } & Partial<UniversalHandlerOptions & ExpandHandlerOptions>
   ): this;
 }
 
@@ -113,41 +112,41 @@ export interface DubboRouterOptions extends Partial<UniversalHandlerOptions> {
 /**
  * Create a new DubboRouter.
  */
-export function createDubboRouter(
-  routerOptions?: DubboRouterOptions
-): DubboRouter {
+export function createDubboRouter(routerOptions?: DubboRouterOptions): DubboRouter {
   const base = whichProtocols(routerOptions);
   const handlers: Array<UniversalHandler & ExpandHandler> = [];
   return {
     handlers,
-    service(service, implementation, options) {
+    service(options) {
+      const service = options.service;
+      const implement = options.implement;
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        ...(createUniversalServiceHandlers(
-          createServiceImplSpec(service, implementation),
-          protocols
-        )).map((item: UniversalHandler): UniversalHandler & ExpandHandler => {
+        ...createUniversalServiceHandlers(createServiceImplSpec(service, implement), protocols).map(
+          (item: UniversalHandler): UniversalHandler & ExpandHandler => {
             return Object.assign(item, {
-              serviceVersion: options?.serviceVersion ?? '',
-              serviceGroup: options?.serviceGroup ?? ''
-            })
-        })
+              serviceVersion: options?.serviceVersion ?? "",
+              serviceGroup: options?.serviceGroup ?? ""
+            });
+          }
+        )
       );
       return this;
     },
-    rpc(service, method, implementation, options) {
+    rpc(options) {
+      const { service, method, impl } = options;
       const { protocols } = whichProtocols(options, base);
       handlers.push(
-        Object.assign(createUniversalMethodHandler(
-          createMethodImplSpec(service, method, implementation),
-          protocols
-        ), {
-          serviceVersion: options?.serviceVersion ?? '',
-          serviceGroup: options?.serviceGroup ?? ''
-        })
+        Object.assign(
+          createUniversalMethodHandler(createMethodImplSpec(service, method, impl), protocols),
+          {
+            serviceVersion: options?.serviceVersion ?? "",
+            serviceGroup: options?.serviceGroup ?? ""
+          }
+        )
       );
       return this;
-    },
+    }
   };
 }
 
@@ -161,11 +160,11 @@ function whichProtocols(
   const opt: DubboRouterOptions = base
     ? {
         ...validateUniversalHandlerOptions(base.options),
-        ...options,
+        ...options
       }
     : {
         ...options,
-        ...validateUniversalHandlerOptions(options ?? {}),
+        ...validateUniversalHandlerOptions(options ?? {})
       };
 
   const protocols: ProtocolHandlerFactory[] = [];
@@ -179,13 +178,10 @@ function whichProtocols(
     protocols.push(handlerFactoryTriple(opt));
   }
   if (protocols.length === 0) {
-    throw new DubboError(
-      "cannot create handler, all protocols are disabled",
-      Code.InvalidArgument
-    );
+    throw new DubboError("cannot create handler, all protocols are disabled", Code.InvalidArgument);
   }
   return {
     options: opt,
-    protocols,
+    protocols
   };
 }

@@ -12,9 +12,9 @@
     "@bufbuild/protobuf": "^1.2.1",
     "@bufbuild/protoc-gen-es": "^1.2.1",
     "@fastify/cors": "^8.3.0",
-    "@apachedubbo/dubbo": "3.0.0-alpha",
-    "@apachedubbo/dubbo-fastify": "3.0.0-alpha",
-    "@apachedubbo/protoc-gen-apache-dubbo-es": "3.0.0-alpha",
+    "@apachedubbo/dubbo": "../../packages/dubbo",
+    "@apachedubbo/dubbo-fastify": "../../packages/dubbo-fastify",
+    "@apachedubbo/protoc-gen-apache-dubbo-es": "../../packages/protoc-gen-apache-dubbo-es",
     "fastify": "^4.19.2"
   }
 }

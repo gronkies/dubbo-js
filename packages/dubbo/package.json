@@ -65,6 +65,10 @@
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.2.1"
   },
+  "dependencies": {
+    "@apachedubbo/dubbo-registry": "../dubbo-registry",
+    "@apachedubbo/dubbo-node": "../dubbo-node"
+  },
   "devDependencies": {
     "@bufbuild/protoc-gen-es": "^1.2.1",
     "@types/jasmine": "^4.3.0",

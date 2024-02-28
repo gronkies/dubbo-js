@@ -20,7 +20,7 @@ import type {
   MethodInfoBiDiStreaming,
   MethodInfoClientStreaming,
   MethodInfoServerStreaming,
-  MethodInfoUnary,
+  MethodInfoUnary
 } from "@bufbuild/protobuf";
 import type { Transport } from "./transport.js";
 import { makeAnyClient } from "./any-client.js";
@@ -28,7 +28,7 @@ import type { CallOptions } from "./call-options.js";
 import { DubboError } from "./dubbo-error.js";
 import { Code } from "./code.js";
 import { createAsyncIterable } from "./protocol/async-iterable.js";
-import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
+import type { TripleClientServiceOptions } from "./protocol-triple/client-service-options.js";
 
 // prettier-ignore
 /**
@@ -109,17 +109,13 @@ type ServerStreamingFn<I extends Message<I>, O extends Message<O>> = (
   options?: CallOptions
 ) => AsyncIterable<O>;
 
-export function createServerStreamingFn<
-  I extends Message<I>,
-  O extends Message<O>
->(
+export function createServerStreamingFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
   method: MethodInfo<I, O>
 ): ServerStreamingFn<I, O> {
   return async function* (input, options): AsyncIterable<O> {
-    const inputMessage =
-      input instanceof method.I ? input : new method.I(input);
+    const inputMessage = input instanceof method.I ? input : new method.I(input);
     const response = await transport.stream<I, O>(
       service,
       method,
@@ -143,10 +139,7 @@ type ClientStreamingFn<I extends Message<I>, O extends Message<O>> = (
   options?: CallOptions
 ) => Promise<O>;
 
-export function createClientStreamingFn<
-  I extends Message<I>,
-  O extends Message<O>
->(
+export function createClientStreamingFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
   method: MethodInfo<I, O>
@@ -174,10 +167,7 @@ export function createClientStreamingFn<
       singleMessage = message;
     }
     if (!singleMessage) {
-      throw new DubboError(
-        "protocol error: missing response message",
-        Code.Internal
-      );
+      throw new DubboError("protocol error: missing response message", Code.Internal);
     }
     options?.onTrailer?.(response.trailer);
     return singleMessage;
@@ -193,10 +183,7 @@ type BiDiStreamingFn<I extends Message<I>, O extends Message<O>> = (
   options?: CallOptions
 ) => AsyncIterable<O>;
 
-export function createBiDiStreamingFn<
-  I extends Message<I>,
-  O extends Message<O>
->(
+export function createBiDiStreamingFn<I extends Message<I>, O extends Message<O>>(
   transport: Transport,
   service: ServiceType,
   method: MethodInfo<I, O>

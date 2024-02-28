@@ -17,10 +17,10 @@ import type {
   Message,
   MethodInfo,
   PartialMessage,
-  ServiceType,
+  ServiceType
 } from "@bufbuild/protobuf";
 import type { StreamResponse, UnaryResponse } from "./interceptor.js";
-import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
+import type { TripleClientServiceOptions } from "./protocol-triple/client-service-options.js";
 
 /**
  * Transport represents the underlying transport for a client.

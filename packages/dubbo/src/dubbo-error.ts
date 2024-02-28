@@ -13,12 +13,7 @@
 // limitations under the License.
 
 import { Code } from "./code.js";
-import type {
-  AnyMessage,
-  IMessageTypeRegistry,
-  JsonValue,
-  MessageType,
-} from "@bufbuild/protobuf";
+import type { AnyMessage, IMessageTypeRegistry, JsonValue, MessageType } from "@bufbuild/protobuf";
 import { createRegistry, Message } from "@bufbuild/protobuf";
 import { codeToString } from "./protocol-triple/code-string.js";
 
@@ -132,14 +127,12 @@ export class DubboError extends Error {
    */
   findDetails<T extends Message<T>>(type: MessageType<T>): T[];
   findDetails(registry: IMessageTypeRegistry): AnyMessage[];
-  findDetails(
-    typeOrRegistry: MessageType | IMessageTypeRegistry
-  ): AnyMessage[] {
+  findDetails(typeOrRegistry: MessageType | IMessageTypeRegistry): AnyMessage[] {
     const registry =
       "typeName" in typeOrRegistry
         ? {
             findMessage: (typeName: string): MessageType | undefined =>
-              typeName === typeOrRegistry.typeName ? typeOrRegistry : undefined,
+              typeName === typeOrRegistry.typeName ? typeOrRegistry : undefined
           }
         : typeOrRegistry;
     const details: AnyMessage[] = [];
@@ -199,10 +192,7 @@ export function dubboErrorDetails(
 /**
  * @deprecated use DubboError.findDetails() instead
  */
-export function dubboErrorDetails(
-  error: DubboError,
-  registry: IMessageTypeRegistry
-): AnyMessage[];
+export function dubboErrorDetails(error: DubboError, registry: IMessageTypeRegistry): AnyMessage[];
 /**
  * @deprecated use DubboError.findDetails() instead
  */
@@ -211,10 +201,8 @@ export function dubboErrorDetails(
   typeOrRegistry: MessageType | IMessageTypeRegistry,
   ...moreTypes: MessageType[]
 ): AnyMessage[] {
-  const types: MessageType[] =
-    "typeName" in typeOrRegistry ? [typeOrRegistry, ...moreTypes] : [];
-  const registry =
-    "typeName" in typeOrRegistry ? createRegistry(...types) : typeOrRegistry;
+  const types: MessageType[] = "typeName" in typeOrRegistry ? [typeOrRegistry, ...moreTypes] : [];
+  const registry = "typeName" in typeOrRegistry ? createRegistry(...types) : typeOrRegistry;
   const details: AnyMessage[] = [];
   for (const data of error.details) {
     if (data instanceof Message) {
@@ -243,9 +231,7 @@ export function dubboErrorDetails(
  * Create an error message, prefixing the given code.
  */
 function createMessage(message: string, code: Code) {
-  return message.length
-    ? `[${codeToString(code)}] ${message}`
-    : `[${codeToString(code)}]`;
+  return message.length ? `[${codeToString(code)}] ${message}` : `[${codeToString(code)}]`;
 }
 
 /**
@@ -260,10 +246,7 @@ function createMessage(message: string, code: Code) {
  *
  * @deprecated use DubboError.from() instead
  */
-export function dubboErrorFromReason(
-  reason: unknown,
-  code = Code.Unknown
-): DubboError {
+export function dubboErrorFromReason(reason: unknown, code = Code.Unknown): DubboError {
   if (reason instanceof DubboError) {
     return reason;
   }
