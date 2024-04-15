@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-import type { DubboRegistry } from "./registry";
-import BaseRegistry from "./registry-base";
-import { Zk, ZookeeperRegistry } from "./registry-zookeeper";
-
-export type { DubboRegistry };
-export { BaseRegistry, Zk, ZookeeperRegistry };
+export type { DubboRegistry } from "./registry";
+export { BaseRegistry } from "./registry-base";
+export { Zk, ZookeeperRegistry } from "./registry-zookeeper";
 export type { TypeName, DubboUrl } from "./types";

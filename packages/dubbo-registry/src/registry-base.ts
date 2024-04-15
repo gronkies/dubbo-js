@@ -23,7 +23,7 @@ const log = debug("registry:base~");
 /**
  * Extract the base class of the registry
  */
-export default class BaseRegistry {
+export class BaseRegistry {
   protected readonly subscribers: Set<RegistrySubscriber>;
   protected readonly dubboServiceUrlMap: Map<TypeName, Array<DubboUrl>>;
 
