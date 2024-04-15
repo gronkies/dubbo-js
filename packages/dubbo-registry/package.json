@@ -26,7 +26,7 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@apachedubbo/dubbo": "3.0.0-alpha",
+    "@apachedubbo/dubbo": "workspace:3.0.0-alpha",
     "@apachedubbo/dubbo-node": "3.0.0-alpha",
     "debug": "3.1.0",
     "ip": "1.1.5",

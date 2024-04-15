@@ -3,8 +3,7 @@
   "name": "dubbo-js-private-workspace",
   "workspaces": [
     "./packages/dubbo",
-    "./packages/protoc-gen-apache-dubbo-es",
-    "./packages/protoc-gen-apache-dubbo-web",
+    "./packages/dubbo-registry",
     "./packages/dubbo-web",
     "./packages/dubbo-node",
     "./packages/dubbo-fastify",
@@ -12,7 +11,9 @@
     "./packages/dubbo-express",
     "./packages/dubbo-node-test",
     "./packages/dubbo-web-test",
-    "./packages/dubbo-web-bench"
+    "./packages/dubbo-web-bench",
+    "./packages/protoc-gen-apache-dubbo-es",
+    "./packages/protoc-gen-apache-dubbo-web"
   ],
   "engines": {
     "node": ">=16",
